@@ -2,14 +2,108 @@ package tankGame.pojo;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Tank {
-	int x = 0;
-	int y = 0;
-	boolean against;//1 ÎÒ·½ 0 µĞ·½
-	Direct direct;//·½Ïò
-	Color color;
-	
+public class Tank extends Model {
+
+	boolean against;// æ•Œå¯¹çŠ¶æ€
+
+	List<Bullet> bullets = new ArrayList<Bullet>();
+
+	// å‘å°„å­å¼¹
+	public Bullet launchBullet() {
+		Bullet b = null;
+
+		switch (direct) {
+		case UP:
+			b = new Bullet(x + 8, y - 5, this.direct, against);
+			// æŠŠå­å¼¹åŠ å…¥åˆ°å­å¼¹é›†
+			bullets.add(b);
+			break;
+		case DOWN:
+			b = new Bullet(x + 8, y + 35, this.direct, against);
+			bullets.add(b);
+			break;
+		case RIGHT:
+			b = new Bullet(x + 30, y + 12, this.direct, against);
+			bullets.add(b);
+			break;
+		case LEFT:
+			b = new Bullet(x - 10, y + 13, this.direct, against);
+			bullets.add(b);
+			break;
+		}
+		Thread go = new Thread(b);
+		go.start();
+		return b;
+	}
+
+	// å¦å…‹æ¸²æŸ“
+	public void draw(Graphics g) {
+		if (null != color)
+			g.setColor(color);
+
+		switch (direct) {
+		case UP:
+			g.fill3DRect(x, y, 5, 30, false);
+
+			g.fill3DRect(x + 15, y, 5, 30, false);
+
+			g.fill3DRect(x + 5, y + 5, 10, 20, false);
+			g.fillOval(x + 5, y + 10, 10, 10);
+			g.drawLine(x + 10, y - 5, x + 10, y + 15);
+			break;
+		case DOWN:
+			g.fill3DRect(x, y, 5, 30, false);
+
+			g.fill3DRect(x + 15, y, 5, 30, false);
+
+			g.fill3DRect(x + 5, y + 5, 10, 20, false);
+			g.fillOval(x + 5, y + 10, 10, 10);
+			g.drawLine(x + 10, y + 15, x + 10, y + 35);
+			break;
+		case RIGHT:
+			g.fill3DRect(x - 5, y + 5, 30, 5, false);
+			g.fill3DRect(x, y + 10, 20, 10, false);
+
+			g.fill3DRect(x - 5, y + 20, 30, 5, false);
+			g.fillOval(x + 5, y + 10, 10, 10);
+			g.drawLine(x + 15, y + 13, x + 30, y + 13);
+			break;
+		case LEFT:
+			g.fill3DRect(x - 5, y + 5, 30, 5, false);
+			g.fill3DRect(x, y + 10, 20, 10, false);
+			g.fill3DRect(x - 5, y + 20, 30, 5, false);
+			g.fillOval(x + 5, y + 10, 10, 10);
+			g.drawLine(x + 10, y + 13, x - 10, y + 13);
+			break;
+		}
+
+	}
+
+	public void move(Direct direct) {
+		switch(direct){
+		case UP:
+			this.direct = direct;
+			setY(y - speed);
+			break; 
+		case DOWN:
+			this.direct = direct;
+			setY(y + speed);
+			break;
+		case LEFT:
+			this.direct = direct;
+			setX(x - speed);
+			break;
+		case RIGHT:
+			this.direct = direct;
+			setX(x + speed);
+			break;
+		}
+		//System.out.println("tank--x:"+x+" y:"+y+" direct:"+direct+" speed:"+speed);
+	}
+
 	public int getX() {
 		return x;
 	}
@@ -50,75 +144,11 @@ public class Tank {
 		this.color = color;
 	}
 
-	public void shoot(){
-		
+	public List<Bullet> getBullets() {
+		return bullets;
 	}
-	
-	//ÕâĞ©³¤¿íÊı¾İºóÃæ¿ÉÒÔ³£Á¿»¯
-	public void draw(Graphics g){
-		if(null != color)
-		g.setColor(color);
-		
-		// ÅĞ¶Ï·½Ïò
-		switch (direct) {
-		// ÏòÉÏ
-		case UP:
-			// ×ó±ßµÄ¾ØĞÎ
-			g.fill3DRect(x, y, 5, 30, false);
 
-			// ÓÒ±ßµÄ¾ØĞÎ
-			g.fill3DRect(x + 15, y, 5, 30, false);
-
-			// ÖĞ¼äµÄ¾ØĞÎ
-			g.fill3DRect(x + 5, y + 5, 10, 20, false);
-			// Ô²ĞÎ
-			g.fillOval(x + 5, y + 10, 10, 10);
-			// Ïß
-			g.drawLine(x + 10, y - 5, x + 10, y + 15);
-			break;
-		// ÏòÏÂ
-		case DOWN:
-			g.fill3DRect(x, y, 5, 30, false);
-
-			// ÓÒ±ßµÄ¾ØĞÎ
-			g.fill3DRect(x + 15, y, 5, 30, false);
-
-			// ÖĞ¼äµÄ¾ØĞÎ
-			g.fill3DRect(x + 5, y + 5, 10, 20, false);
-			// Ô²ĞÎ
-			g.fillOval(x + 5, y + 10, 10, 10);
-			// Ïß
-			g.drawLine(x + 10, y + 15, x + 10, y + 35);
-			break;
-		// ÏòÓÒ
-		case LEFT:
-			// ÉÏÃæµÄ¾ØĞÎ
-			g.fill3DRect(x - 5, y + 5, 30, 5, false);
-			// ÖĞ¼äµÄ¾ØĞÎ
-			g.fill3DRect(x, y + 10, 20, 10, false);
-
-			// ÏÂÃæµÄ¾ØĞÎ
-			g.fill3DRect(x - 5, y + 20, 30, 5, false);
-			// Ô²ĞÎ
-			g.fillOval(x + 5, y + 10, 10, 10);
-			// Ïß
-			g.drawLine(x + 15, y + 13, x + 30, y + 13);
-			break;
-		// Ïò×ó
-		case RIGHT:
-			// ÉÏÃæµÄ¾ØĞÎ
-			g.fill3DRect(x - 5, y + 5, 30, 5, false);
-			// ÖĞ¼äµÄ¾ØĞÎ
-			g.fill3DRect(x, y + 10, 20, 10, false);
-			// ÏÂÃæµÄ¾ØĞÎ
-			g.fill3DRect(x - 5, y + 20, 30, 5, false);
-			// Ô²ĞÎ
-			g.fillOval(x + 5, y + 10, 10, 10);
-			// Ïß
-			g.drawLine(x + 10, y + 13, x - 10, y + 13);
-			break;
-		}
-		
+	public void setBullets(List<Bullet> bullets) {
+		this.bullets = bullets;
 	}
-	
 }
